@@ -12,7 +12,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table
 public class Device implements Serializable {
-	
+
 private static final long serialVersionUID = 1L;
 	
 	@Id
@@ -40,7 +40,14 @@ private static final long serialVersionUID = 1L;
 	public void setAddress(String address) {
 		this.address = address;
 	}
-	public Device(long id, String name, String address) {
+	public Device(String name, String address) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.address = address;
+	}
+	
+	public Device() {
 		super();
 		this.id = id;
 		this.name = name;
