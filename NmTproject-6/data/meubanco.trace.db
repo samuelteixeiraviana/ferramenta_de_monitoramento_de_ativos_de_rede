@@ -458,3 +458,27 @@ Caused by: org.h2.mvstore.MVStoreException: The file is locked: C:/Users/samuel.
 	at org.h2.mvstore.SingleFileStore.open(SingleFileStore.java:81)
 	at org.h2.mvstore.MVStore.<init>(MVStore.java:286)
 	... 137 more
+2025-04-01 12:39:11.228190-03:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "delete [*]* FROM DEVICE"; expected "identifier"; SQL statement:
+delete * FROM DEVICE [42001-232]
+2025-04-01 12:39:24.506851-03:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "delete [*]19216819 FROM DEVICE"; expected "identifier"; SQL statement:
+delete 19216819 FROM DEVICE [42001-232]
+2025-04-01 12:40:48.589900-03:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "SELECT * FROM DEVICE \000d\000a\000d\000adelete [*]from Device d where d.address = 19216807"; SQL statement:
+SELECT * FROM DEVICE 
+
+delete from Device d where d.address = 19216807 [42000-232]
+2025-04-01 12:40:55.627179-03:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "SELECT * FROM DEVICE \000d\000a\000d\000adelete [*]from Device d where d.address = 19216807"; SQL statement:
+SELECT * FROM DEVICE 
+
+delete from Device d where d.address = 19216807 [42000-232]
+2025-04-01 12:41:14.349546-03:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "SELECT * FROM DEVICE \000d\000a\000d\000adelete [*]from Device d where d.address = 19216819"; SQL statement:
+SELECT * FROM DEVICE 
+
+delete from Device d where d.address = 19216819 [42000-232]
+2025-04-01 12:41:18.832999-03:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "DEVIC" not found; SQL statement:
+SELECT * FROM DEVIC [42102-232]
