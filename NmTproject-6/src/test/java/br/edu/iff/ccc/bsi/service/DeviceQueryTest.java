@@ -2,6 +2,8 @@ package br.edu.iff.ccc.bsi.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -24,6 +26,9 @@ public class DeviceQueryTest {
 
     @Mock
     private DeviceRepository deviceRepository;
+    
+    @Mock
+    private DeviceService deviceService;
     
     
     @BeforeEach
@@ -62,13 +67,51 @@ public class DeviceQueryTest {
         
         //Deepseek mandou colocar isso
         // Configura o comportamento do mock do TaskRepository
-        when(deviceRepository.findByAddress("19216812")).thenReturn(mockedDevice);
+        when(deviceRepository.findByAddress("19216812")).thenReturn(List.of(mockedDevice));
         
         // ação
-        Device result = deviceRepository.findByAddress("19216812");
+        List<Device> result = deviceRepository.findByAddress("19216812");
 
         // verificação
         assertNotNull(result);
-        assertEquals("19216812", result.getAddress());
+        assertEquals("19216812", result.get(0).getAddress());
+    }
+    
+    @Test
+    public void testInsertIntoDevice() {
+    	// cenário
+    	Device mockedDevice = new Device();
+        mockedDevice.setName("Device3");
+        mockedDevice.setAddress("19216813");
+        
+        //Deepseek mandou colocar isso
+        // Configura o comportamento do mock do TaskRepository
+        doNothing().when(deviceService).insertDevice("Device3", "19216813");
+        
+        // ação
+        deviceService.insertDevice("Device3", "19216813");
+        
+        // verificação
+        verify(deviceService).insertDevice("Device3", "19216813");
+    }
+    
+    @Test
+    public void testDeleteByAddress() {
+    	// cenário
+    	Device mockedDevice = new Device();
+        mockedDevice.setName("Device4");
+        mockedDevice.setAddress("19216814");
+        
+        //Deepseek mandou colocar isso
+        // Configura o comportamento do mock do TaskRepository
+        doNothing().when(deviceService).insertDevice("Device4", "19216814");
+        doNothing().when(deviceRepository).deleteByAddress("19216814");
+        
+        // ação
+        deviceService.insertDevice("Device4", "19216814");
+        deviceRepository.deleteByAddress("19216814");
+
+        // verificação
+        verify(deviceRepository).deleteByAddress("19216814");
     }
 }

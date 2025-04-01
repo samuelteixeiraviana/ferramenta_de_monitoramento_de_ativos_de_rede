@@ -8,9 +8,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 @Entity
-@Table
+@Table(name = "device")
 public class Device implements Serializable {
 
 private static final long serialVersionUID = 1L;
@@ -19,7 +21,12 @@ private static final long serialVersionUID = 1L;
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
 	
+	@NotNull
+	@Size(min = 3, max = 50, message = "Nome deve ter entre 3 e 50 caracteres")
 	private String name;
+	
+	@NotNull
+	@Size(min= 8, max = 8, message = "Controle de tamanho do endereço IP enviado")
 	private String address;
 	
 	public long getId() {
