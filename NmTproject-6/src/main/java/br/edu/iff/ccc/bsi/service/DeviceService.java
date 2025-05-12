@@ -27,10 +27,26 @@ public class DeviceService {
 	@Transactional
     public void insertDevice(String name, String address)
 	{
-        Device device = new Device();
-        device.setName(name);
-        device.setAddress(address);
+        Device device = new Device(name,address);
         deviceRep.save(device);
+	}
+	
+	
+	
+	public List<Device> findByName(String name)
+	{
+		return deviceRep.findByName(name);
+	}
+	
+	public List<Device> findByAddress(String address)
+	{
+		return deviceRep.findByAddress(address);
+	}
+	
+	@Transactional
+	public void deleteByAddress(String address)
+	{
+		deviceRep.deleteByAddress(address);
 	}
 	
 	public boolean eAlcancavel(String address, int timeout)
