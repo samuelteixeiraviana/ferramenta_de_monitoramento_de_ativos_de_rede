@@ -1,0 +1,58 @@
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>NmT - Monitoramento</title>
+	<link rel="stylesheet" th:href="@{/css/style_monitor.css}">
+</head>
+
+<body>
+	<header class="navbar">
+		<h1 class="logo">NmT</h1>
+		<div class="icons">
+			<span class="icon">&#128100;</span>
+			<span class="icon" id="openModal">&#x2795;</span>
+			<span class="icon" id="fullscreen">&#x26F6;</span>
+		</div>
+	</header>
+
+	<main class="grid-container">
+		<div th:each="entry : ${devices}">
+			<h2 th:text="'Dispositivos ' + ${entry.key}">Dispositivos UP</h2>
+			<div th:each="device : ${entry.value}">
+				<div th:class="'card ' + (${entry.key} == 'UP' ? 'up' : 'down')">
+					<small th:text="${device.name}">Nome</small>
+					<strong th:text="${entry.key}">Status</strong>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	<div id="myModal" class="modal">
+		<div class="modal-content">
+			<span class="close" id="closeModal">&times;</span>
+			<h2>Novo Host</h2>
+
+			<form th:action="@{/teste}" method="post" th:object="${Device}">
+				<div style="margin-bottom: 1rem;">
+					<label for="novoHost">Novo Host</label><br>
+					<input type="text" id="novoHost" name="nome" th:field="*{name}">
+				</div>
+
+				<div style="margin-bottom: 1rem;">
+					<label for="endereco">Endereço</label><br>
+					<input type="text" id="endereco" name="endereco" th:field="*{address}">
+				</div>
+
+				<div style="text-align: right;">
+					<button type="submit">Salvar</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<script src="/js/script.js" th:src="@{/js/script.js}"></script>
+</body>
+
+</html>
