@@ -10,6 +10,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import br.edu.iff.ccc.bsi.entities.Device;
 import br.edu.iff.ccc.bsi.service.AgendadorPing;
@@ -48,31 +49,14 @@ public class MainViewController {
 		return "login.html";
 	}
 	
-//	@GetMapping("teste") //GET de teste
-//	public String getTeste(Model model)
-//	{
-//	    Device device = new Device();
-//	    
-//	    Map<String, List<Device>> devices = agendadorPing.monitorDevices();
-//	    
-//	    model.addAttribute("Device", device);
-//	    model.addAttribute("devices", devices);
-//	    
-//	    return "teste.html";
-//	}
-	
-//	@PostMapping("teste")
-//    public String saveDevice(@Valid @ModelAttribute("Device") Device device, BindingResult result, Model model)
-//	{
-//        if (result.hasErrors())
-//        {	
-//        	model.addAttribute("Device", device);
-//            return "teste"; // Retorna ao formulário se houver erros
-//        }
-//        System.out.println("Nome do device criado: "+device.getName()+"\n"+"Endereço do device criado: "+device.getAddress());
-//        this.deviceService.insertDevice(device.getName(),device.getAddress());
-//        return "redirect:/teste";
-//    }	
+	@PostMapping("login")
+	public String loginAdmin(@RequestParam String username, @RequestParam String password) {
+	    if ("admin".equals(username) && "admin".equals(password)) {
+	        return "redirect:/home";
+	    } else {
+	        return "redirect:/login";
+	    }
+	}
 	
 	@PostMapping("home")
 	public String saveDevice(@Valid @ModelAttribute("Device") Device device, BindingResult result, Model model)
@@ -80,7 +64,7 @@ public class MainViewController {
         if (result.hasErrors())
         {	
         	model.addAttribute("Device", device);
-            return "teste"; // Retorna ao formulário se houver erros
+            return "home";
         }
         System.out.println("Nome do device criado: "+device.getName()+"\n"+"Endereço do device criado: "+device.getAddress());
         this.deviceService.insertDevice(device.getName(),device.getAddress());
