@@ -34,7 +34,7 @@
       <span class="close" id="closeModal">&times;</span>
       <h2>Novo Host</h2>
 
-      <form th:action="@{/teste}" method="post" th:object="${Device}">
+      <form th:action="@{/home}" method="post" th:object="${Device}">
         <div style="margin-bottom: 1rem;">
           <label for="novoHost">Novo Host</label><br>
           <input type="text" id="novoHost" name="nome" th:field="*{name}">
@@ -53,11 +53,12 @@
   </div>
 
   <div class="user" id="user">
-    <a href="login.html">
+    <a href="/templates/login.html">
       <p>Sair</p>
     </a>
+  </div>
 
-    <script src="/js/script.js" th:src="@{/js/script.js}"></script>
+  <script src="/js/script.js" th:src="@{/js/script.js}"></script>
 </body>
 
 </html>

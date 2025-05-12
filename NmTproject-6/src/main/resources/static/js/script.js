@@ -38,18 +38,3 @@ fullscreenicon.addEventListener('click', function () {
         document.exitFullscreen();
     }
 });
-
-
-function LoginAdmin(event) {
-    event.preventDefault();
-
-    const email = document.getElementById('username').value;
-    const senha = document.getElementById('password').value;
-
-    if (email === 'admin' && senha === 'admin') {
-        console.log("chegou aqui");
-        location.href = "home.html";
-    } else {
-        alert('EMAIL OU SENHA INCORRETOS!');
-    }
-};

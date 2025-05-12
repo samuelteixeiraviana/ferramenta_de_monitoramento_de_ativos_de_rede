@@ -1,18 +1,18 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NmT - Login</title>
-  <link rel="stylesheet" href="/static/css/style_login.css">
+  <link rel="stylesheet" th:href="@{/css/style_login.css}">
 </head>
 
 <body>
   <div class="login-container">
     <h1 class="logo">NmT</h1>
 
-    <form id="loginForm" class="login-form">
+    <form id="loginForm" class="login-form" th:action="@{/login}" method="post">
       <div class="form-group">
         <label for="username">Name</label>
         <input type="text" id="username" name="username" required>
@@ -27,7 +27,7 @@
     </form>
   </div>
 
-  <script src="/static/js/script.js"></script>
+  <script th:src="@{/js/script.js}"></script>
 </body>
 
 </html>
