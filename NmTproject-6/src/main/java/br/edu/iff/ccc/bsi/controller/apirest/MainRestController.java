@@ -1,13 +1,16 @@
 package br.edu.iff.ccc.bsi.controller.apirest;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,7 +23,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 import br.edu.iff.ccc.bsi.entities.Device;
 import br.edu.iff.ccc.bsi.exception.DeviceAlreadyExistsException;
 import br.edu.iff.ccc.bsi.exception.DeviceNotFoundException;
-import br.edu.iff.ccc.bsi.repository.DeviceRepository;
 import br.edu.iff.ccc.bsi.service.AgendadorPing;
 import br.edu.iff.ccc.bsi.service.DeviceService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,10 +40,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class MainRestController {
     
     @Autowired
-    private DeviceRepository deviceRepository;
+    private DeviceService deviceService;
     
     @Autowired
-    private DeviceService deviceService;
+    private  AgendadorPing agendadorPing;
 
     @Operation(summary = "Buscar dispositivos por nome", description = "Retorna todos os dispositivos com o nome especificado")
     @ApiResponses(value = {
@@ -72,10 +74,10 @@ public class MainRestController {
         )
         @PathVariable("name") String name) {   
         
-        if(deviceRepository.findByName(name).isEmpty()) {
+        if(deviceService.findByName(name).isEmpty()) {
             throw new DeviceNotFoundException(name);
         } else {
-            List<Device> devices = deviceRepository.findByName(name);
+            List<Device> devices = deviceService.findByName(name);
 
             CollectionModel<EntityModel<Device>> model = CollectionModel.of(
                 devices.stream()
@@ -120,10 +122,10 @@ public class MainRestController {
         )
         @PathVariable("address") String address) {
         
-        if(deviceRepository.findByAddress(address).isEmpty()) {
+        if(deviceService.findByAddress(address).isEmpty()) {
             throw new DeviceNotFoundException(address);
         } else {
-            List<Device> devices = deviceRepository.findByAddress(address);
+            List<Device> devices = deviceService.findByAddress(address);
 
             CollectionModel<EntityModel<Device>> model = CollectionModel.of(
                 devices.stream()
@@ -175,12 +177,12 @@ public class MainRestController {
         )
         @RequestParam("name") String name) {
         
-        if(!deviceRepository.findByAddress(address).isEmpty()) {
+        if(!deviceService.findByAddress(address).isEmpty()) {
             throw new DeviceAlreadyExistsException(address);
         } else {
             deviceService.insertDevice(name, address);
             
-            List<Device> devices = deviceRepository.findByAddress(address);
+            List<Device> devices = deviceService.findByAddress(address);
 
             CollectionModel<EntityModel<Device>> model = CollectionModel.of(
                 devices.stream()
@@ -227,10 +229,10 @@ public class MainRestController {
         )
         @PathVariable("address") String address) {
         
-        if(!deviceRepository.findByAddress(address).isEmpty()) {
-            List<Device> devices = deviceRepository.findByAddress(address);
+        if(!deviceService.findByAddress(address).isEmpty()) {
+            List<Device> devices = deviceService.findByAddress(address);
             
-            deviceRepository.deleteByAddress(address);
+            deviceService.deleteByAddress(address);
             
             CollectionModel<EntityModel<Device>> model = CollectionModel.of(
                 devices.stream()
@@ -244,6 +246,105 @@ public class MainRestController {
             throw new DeviceNotFoundException(address);
         }
     }
+
+  @Operation(summary = "Buscar dispositivos online e offline", description = "Retorna todos os dispositivos com a distinção de online e offline")
+  @ApiResponses(value = {
+      @ApiResponse(
+          responseCode = "200",
+          description = "Dispositivos encontrados",
+          content = @Content(
+              mediaType = "application/json",
+              schema = @Schema(implementation = Device.class)
+      )),
+      @ApiResponse(
+          responseCode = "404",
+          description = "Lista de dispositivos vazia",
+          content = @Content(
+              mediaType = "application/json",
+              examples = @ExampleObject(
+                  value = "{\"message\": \"Lista de dispositivos vazia\"}"
+              )
+          )
+      )
+  })
+  @GetMapping(path = "/devices/monitor")
+  public ResponseEntity<Map<String, CollectionModel<EntityModel<Device>>>> monitorDispositivosStream()
+  {
+	  Map<String, List<Device>> resultado = agendadorPing.monitorDevices();
+	  
+	  Map<String, CollectionModel<EntityModel<Device>>> responseMap = new HashMap<>();
+
+	  resultado.forEach((String chave, List<Device> devices) -> {
+		  
+		  CollectionModel<EntityModel<Device>> modelGroup = CollectionModel.of(
+			        devices.stream()
+			            .map(device -> EntityModel.of(
+			                device,
+			                linkTo(methodOn(MainRestController.class)
+			                    .getDeviceEndereco(device.getAddress()))
+			                    .withSelfRel()
+			            ))
+			            .collect(Collectors.toList())
+			    );
+			    responseMap.put(chave, modelGroup);
+	  });
+	  
+	  return ResponseEntity.ok(responseMap);
+  }
+  
+  //método pra buscar os dispositivos e retornar pra view
+  @GetMapping("/home")
+  public String home(Model model) {
+      // Chama o método que recupera os dispositivos
+      Map<String, List<Device>> dispositivos = agendadorPing.monitorDevices();
+      
+      // Passa a lista de dispositivos para o modelo
+      model.addAttribute("dispositivos", dispositivos);
+      
+      return "home.html"; // Nome da sua página home
+  }
+
+    
+//    @Operation(summary = "Buscar dispositivos online e offline", description = "Retorna todos os dispositivos com a distinção de online e offline")
+//    @ApiResponses(value = {
+//        @ApiResponse(
+//            responseCode = "200",
+//            description = "Dispositivos encontrados",
+//            content = @Content(
+//                mediaType = "application/json",
+//                schema = @Schema(implementation = Device.class)
+//        )),
+//        @ApiResponse(
+//            responseCode = "404",
+//            description = "Lista de dispositivos vazia",
+//            content = @Content(
+//                mediaType = "application/json",
+//                examples = @ExampleObject(
+//                    value = "{\"message\": \"Lista de dispositivos vazia\"}"
+//                )
+//            )
+//        )
+//    })
+//    @GetMapping(path = "/devices/monitor")
+//    public SseEmitter monitorDispositivosStream()
+//    {
+//    	SseEmitter emitter = new SseEmitter();
+//    	
+//    	new Thread(() -> 
+//    	{
+//    		try {
+//				while (true) {
+//					Map<String, List<Device>> resultado = agendadorPing.monitorDevices();
+//					emitter.send(resultado);
+//					Thread.sleep(2500);
+//				}
+//			} catch (Exception e) {
+//				emitter.completeWithError(e);
+//			}
+//    	}).start();
+//    	
+//    	return emitter;
+//    }
 }
 
 //package br.edu.iff.ccc.bsi.controller.apirest;

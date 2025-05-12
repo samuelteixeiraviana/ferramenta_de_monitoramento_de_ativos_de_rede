@@ -1,12 +1,14 @@
 package br.edu.iff.ccc.bsi.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import br.edu.iff.ccc.bsi.entities.Device;
-import br.edu.iff.ccc.bsi.exception.DeviceNotFoundException;
 
 @Service
 public class AgendadorPing
@@ -19,17 +21,29 @@ public class AgendadorPing
 	}
 	
 	@Scheduled(fixedRate = 5000)
-	public void monitorDevices()
+	public Map<String, List<Device>> monitorDevices()
 	{
 		List<Device> devices = deviceService.listaTodosDevices();
+		List<Device> devicesAlcancaveis = new ArrayList<>();
+		List<Device> devicesNaoAlcancaveis = new ArrayList<>();
 		
 		for(Device device : devices)
 		{
 			boolean alcanca = deviceService.eAlcancavel(device.getAddress(), 1000);
 			if(!alcanca)
 			{
-				throw new DeviceNotFoundException(device.getAddress());
+				devicesNaoAlcancaveis.add(device);
+			}
+			else
+			{
+				devicesAlcancaveis.add(device);
 			}
 		}
+		
+		Map<String, List<Device>> resultado = new HashMap<>();
+		resultado.put("UP", devicesAlcancaveis);
+		resultado.put("DOWN", devicesNaoAlcancaveis);
+		
+		return resultado;
 	}
 }
